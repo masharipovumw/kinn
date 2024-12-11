@@ -1,0 +1,9 @@
+<script>
+  export let calculatedData = [];
+
+  let isDisabled = true;
+
+  $: isDisabled = calculatedData.length === 0;
+</script>
+
+<button disabled={isDisabled}>Graph</button>

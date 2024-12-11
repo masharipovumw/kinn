@@ -1,0 +1,39 @@
+<script>
+  export let inputData = [];
+  export let activePoints = 0;
+
+  const addActivePoints = () => {
+    inputData = inputData.map((row, index) => ({
+      ...row,
+      'Active Points': index < activePoints ? 1 : 0,
+    }));
+  };
+</script>
+
+<h2>Data Table</h2>
+<table border="1">
+  <thead>
+    <tr>
+      {#each Object.keys(inputData[0] || {}) as column}
+        <th>{column}</th>
+      {/each}
+      <th>Active Points</th>
+    </tr>
+  </thead>
+  <tbody>
+    {#each inputData as row}
+      <tr>
+        {#each Object.values(row) as value}
+          <td>{value}</td>
+        {/each}
+        <td>{row['Active Points'] || ''}</td>
+      </tr>
+    {/each}
+  </tbody>
+</table>
+
+<label>
+  Enter Active Points:
+  <input type="number" bind:value={activePoints} />
+</label>
+<button on:click={addActivePoints}>Apply Active Points</button>

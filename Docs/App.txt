@@ -1,0 +1,65 @@
+<script>
+
+	import * as XLSX from 'xlsx';
+    import Table from './components/Table.svelte'
+    import Calculations from './components/Calculations.svelte'
+    import Graph from './components/Graph.svelte'
+  
+	let inputData = [];
+	let calculatedData = [];
+	let activePoints = 0;
+	let coefficients = { fn: 0.15, fv: 0.85 };
+  
+	const handleFileUpload = (event) => {
+	  const file = event.target.files[0];
+	  if (!file) return;
+  
+	  const reader = new FileReader();
+	  reader.onload = () => {
+		const data = new Uint8Array(reader.result);
+		const workbook = XLSX.read(data, { type: 'array' });
+		const sheetName = workbook.SheetNames[0];
+		const sheet = workbook.Sheets[sheetName];
+		inputData = XLSX.utils.sheet_to_json(sheet);
+	  };
+	  reader.readAsArrayBuffer(file);
+	};
+  
+	const handleCalculate = () => {
+	  calculatedData = inputData.map((row) => {
+		const VB = row['Liquid Extracted'] - row['Oil Extracted'];
+		return {
+		  ...row,
+		  VB,
+		  'Water Content': VB / row['Liquid Extracted'],
+		};
+	  });
+	};
+  </script>
+  
+  <main>
+	<h1>KIN Coefficient Calculator</h1>
+	<input type="file" accept=".xlsx" on:change={handleFileUpload} />
+	<Table {inputData} {activePoints} />
+	<Calculations {calculatedData} {coefficients} />
+	<Graph {calculatedData} />
+  </main>
+  
+  <style>
+	main {
+	  font-family: Arial, sans-serif;
+	  padding: 20px;
+	}
+  
+	h1 {
+	  font-size: 2rem;
+	  margin-bottom: 20px;
+	}
+  
+	input[type='file'] {
+	  padding: 10px;
+	  font-size: 1rem;
+	  margin: 20px 0;
+	}
+  </style>
+  
